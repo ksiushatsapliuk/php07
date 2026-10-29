@@ -1,0 +1,1 @@
+PASS custom sunlight preserved, defaults applied on type change

@@ -1,0 +1,6 @@
+PASS due cache MISS 3 SQL / HIT 2 SQL, including time-zone setup
+PASS one grouped count per interval; indexed API filter; fixed SQL count
+PASS edit invalidates cache immediately
+PASS watering invalidates cache immediately
+PASS delete invalidates cache immediately
+PASS invalid optimization filters return 400

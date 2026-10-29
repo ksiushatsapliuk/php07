@@ -1,0 +1,82 @@
+[
+    {
+        "elapsed_ms": 134.4411,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 50.766,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 50.663,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 42.45,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 40.895,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 41.374,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 60.323,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 43.8509,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 39.381,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    },
+    {
+        "elapsed_ms": 64.2929,
+        "peak_mb": 2,
+        "sql_queries": 3,
+        "cache": "BYPASS",
+        "rows": 500,
+        "body_sha256": "bde4a3d28201d7935c43da7ac7a50b57e22c70be65853f307619cf1e3e67d96f"
+    }
+]

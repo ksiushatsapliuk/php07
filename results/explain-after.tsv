@@ -1,0 +1,2 @@
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	plants	NULL	ref	idx_plants_watering_interval	idx_plants_watering_interval	4	const	5	100	NULL

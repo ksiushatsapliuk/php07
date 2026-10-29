@@ -1,0 +1,46 @@
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Finished 200 requests
+
+
+Server Software:        Apache/2.4.58
+Server Hostname:        127.0.0.1
+Server Port:            8101
+
+Document Path:          /uncached/api.php?resource=plants&due=1
+Document Length:        58108 bytes
+
+Concurrency Level:      20
+Time taken for tests:   7.064 seconds
+Complete requests:      200
+Failed requests:        0
+Keep-Alive requests:    200
+Total transferred:      11727713 bytes
+HTML transferred:       11621600 bytes
+Requests per second:    28.31 [#/sec] (mean)
+Time per request:       706.408 [ms] (mean)
+Time per request:       35.320 [ms] (mean, across all concurrent requests)
+Transfer rate:          1621.28 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.3      0       1
+Processing:   114  425 712.4    320    6671
+Waiting:       74  411 714.0    299    6671
+Total:        115  425 712.3    320    6671
+
+Percentage of the requests served within a certain time (ms)
+  50%    320
+  66%    352
+  75%    391
+  80%    422
+  90%    509
+  95%    606
+  98%    910
+  99%   6605
+ 100%   6671 (longest request)

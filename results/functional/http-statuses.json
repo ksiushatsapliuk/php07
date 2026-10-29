@@ -1,0 +1,677 @@
+[
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": 3,
+          "name": "Алоказія",
+          "same_interval_count": 1,
+          "watering_interval_days": 5,
+          "last_watered_at": "2026-10-16",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 6,
+          "needs_water": true,
+          "next_watering": "Прострочено на 1 дн."
+        },
+        {
+          "id": 2,
+          "name": "Красула",
+          "same_interval_count": 1,
+          "watering_interval_days": 14,
+          "last_watered_at": "2026-10-22",
+          "is_succulent": true,
+          "sunlight_needs": "Пряме сонце",
+          "days_since_watered": 0,
+          "needs_water": false,
+          "next_watering": "2026-11-05"
+        },
+        {
+          "id": 1,
+          "name": "Монстера",
+          "same_interval_count": 1,
+          "watering_interval_days": 7,
+          "last_watered_at": "2026-10-12",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 10,
+          "needs_water": true,
+          "next_watering": "Прострочено на 3 дн."
+        }
+      ],
+      "meta": {
+        "total": 3,
+        "needs_water": 2
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": 3,
+          "name": "Алоказія",
+          "same_interval_count": 1,
+          "watering_interval_days": 5,
+          "last_watered_at": "2026-10-16",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 6,
+          "needs_water": true,
+          "next_watering": "Прострочено на 1 дн."
+        },
+        {
+          "id": 2,
+          "name": "Красула",
+          "same_interval_count": 1,
+          "watering_interval_days": 14,
+          "last_watered_at": "2026-10-22",
+          "is_succulent": true,
+          "sunlight_needs": "Пряме сонце",
+          "days_since_watered": 0,
+          "needs_water": false,
+          "next_watering": "2026-11-05"
+        },
+        {
+          "id": 1,
+          "name": "Монстера",
+          "same_interval_count": 1,
+          "watering_interval_days": 7,
+          "last_watered_at": "2026-10-12",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 10,
+          "needs_water": true,
+          "next_watering": "Прострочено на 3 дн."
+        }
+      ],
+      "meta": {
+        "total": 3,
+        "needs_water": 2
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php",
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Невідомий ресурс. Використовуйте resource=plants."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=books",
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Невідомий ресурс. Використовуйте resource=plants."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&action=oops",
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Невідома дія. Підтримується action=water."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&action=water",
+    "status": 405,
+    "body": {
+      "success": false,
+      "error": "Метод не підтримується для цього ресурсу або дії."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource[]=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Параметр resource має бути рядком."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&id=abc",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле id має бути додатним цілим числом."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&id[]=1",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле id має бути додатним цілим числом."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&id=0",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле id має бути додатним цілим числом."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&id=999999999",
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Рослину з таким id не знайдено."
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&q[]=x",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Параметр q має бути рядком."
+    }
+  },
+  {
+    "method": "PUT",
+    "url": "api.php?resource=plants",
+    "status": 405,
+    "body": {
+      "success": false,
+      "error": "Метод не підтримується для цього ресурсу або дії."
+    }
+  },
+  {
+    "method": "PATCH",
+    "url": "api.php?resource=plants",
+    "status": 405,
+    "body": {
+      "success": false,
+      "error": "Метод не підтримується для цього ресурсу або дії."
+    }
+  },
+  {
+    "method": "DELETE",
+    "url": "api.php?resource=plants",
+    "status": 405,
+    "body": {
+      "success": false,
+      "error": "Метод не підтримується для цього ресурсу або дії."
+    }
+  },
+  {
+    "method": "OPTIONS",
+    "url": "api.php?resource=plants",
+    "status": 405,
+    "body": {
+      "success": false,
+      "error": "Метод не підтримується для цього ресурсу або дії."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле name: потрібна назва від 1 до 255 символів."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле watering_interval_days: потрібне ціле число від 1 до 3650."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле last_watered_at: потрібна дійсна дата YYYY-MM-DD не пізніше сьогодні."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле name: потрібна назва від 1 до 255 символів."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле name: потрібна назва від 1 до 255 символів."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле name: потрібна назва від 1 до 255 символів."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле watering_interval_days: потрібне ціле число від 1 до 3650."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле watering_interval_days: потрібне ціле число від 1 до 3650."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле watering_interval_days: потрібне ціле число від 1 до 3650."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле last_watered_at: потрібна дійсна дата YYYY-MM-DD не пізніше сьогодні."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле last_watered_at: потрібна дійсна дата YYYY-MM-DD не пізніше сьогодні."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле last_watered_at: потрібна дійсна дата YYYY-MM-DD не пізніше сьогодні."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле is_succulent: використовуйте true/false або 1/0."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Поле sunlight_needs: потрібен текст від 1 до 100 символів."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Тіло запиту містить некоректний JSON."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Тіло JSON має бути об’єктом із полями."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Тіло JSON має бути об’єктом із полями."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Для action=water потрібне поле id."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water&id=1",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "ID у URL і тілі запиту не збігаються."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water&id=999999999",
+    "status": 404,
+    "body": {
+      "success": false,
+      "error": "Рослину з таким id не знайдено."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&id=1",
+    "status": 400,
+    "body": {
+      "success": false,
+      "error": "Створення запису не приймає id у URL."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 4,
+        "name": "API06 ' <script>",
+        "same_interval_count": 2,
+        "watering_interval_days": 7,
+        "last_watered_at": "2026-10-01",
+        "is_succulent": false,
+        "sunlight_needs": "Розсіяне світло",
+        "days_since_watered": 21,
+        "needs_water": true,
+        "next_watering": "Прострочено на 14 дн."
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&id=4",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 4,
+        "name": "API06 ' <script>",
+        "same_interval_count": 2,
+        "watering_interval_days": 7,
+        "last_watered_at": "2026-10-01",
+        "is_succulent": false,
+        "sunlight_needs": "Розсіяне світло",
+        "days_since_watered": 21,
+        "needs_water": true,
+        "next_watering": "Прострочено на 14 дн."
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&q=API06",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": 4,
+          "name": "API06 ' <script>",
+          "same_interval_count": 2,
+          "watering_interval_days": 7,
+          "last_watered_at": "2026-10-01",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 21,
+          "needs_water": true,
+          "next_watering": "Прострочено на 14 дн."
+        }
+      ],
+      "meta": {
+        "total": 4,
+        "needs_water": 3
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 4,
+        "name": "API06 ' <script>",
+        "same_interval_count": 2,
+        "watering_interval_days": 7,
+        "last_watered_at": "2026-10-22",
+        "is_succulent": false,
+        "sunlight_needs": "Розсіяне світло",
+        "days_since_watered": 0,
+        "needs_water": false,
+        "next_watering": "2026-10-29"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water&id=4",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 4,
+        "name": "API06 ' <script>",
+        "same_interval_count": 2,
+        "watering_interval_days": 7,
+        "last_watered_at": "2026-10-22",
+        "is_succulent": false,
+        "sunlight_needs": "Розсіяне світло",
+        "days_since_watered": 0,
+        "needs_water": false,
+        "next_watering": "2026-10-29"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&q=%27%20OR%201%3D1%20--",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "meta": {
+        "total": 4,
+        "needs_water": 2
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants&q=%25",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [],
+      "meta": {
+        "total": 4,
+        "needs_water": 2
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 201,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 5,
+        "name": "Сукулент із форми",
+        "same_interval_count": 2,
+        "watering_interval_days": 14,
+        "last_watered_at": "2026-10-01",
+        "is_succulent": true,
+        "sunlight_needs": "Пряме сонце",
+        "days_since_watered": 21,
+        "needs_water": true,
+        "next_watering": "Прострочено на 7 дн."
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 5,
+        "name": "Сукулент із форми",
+        "same_interval_count": 2,
+        "watering_interval_days": 14,
+        "last_watered_at": "2026-10-22",
+        "is_succulent": true,
+        "sunlight_needs": "Пряме сонце",
+        "days_since_watered": 0,
+        "needs_water": false,
+        "next_watering": "2026-11-05"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants&action=water",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": {
+        "id": 4,
+        "name": "API06 ' <script>",
+        "same_interval_count": 2,
+        "watering_interval_days": 7,
+        "last_watered_at": "2026-10-22",
+        "is_succulent": false,
+        "sunlight_needs": "Розсіяне світло",
+        "days_since_watered": 0,
+        "needs_water": false,
+        "next_watering": "2026-10-29"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "url": "api.php?resource=plants",
+    "status": 200,
+    "body": {
+      "success": true,
+      "data": [
+        {
+          "id": 3,
+          "name": "Алоказія",
+          "same_interval_count": 1,
+          "watering_interval_days": 5,
+          "last_watered_at": "2026-10-16",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 6,
+          "needs_water": true,
+          "next_watering": "Прострочено на 1 дн."
+        },
+        {
+          "id": 2,
+          "name": "Красула",
+          "same_interval_count": 1,
+          "watering_interval_days": 14,
+          "last_watered_at": "2026-10-22",
+          "is_succulent": true,
+          "sunlight_needs": "Пряме сонце",
+          "days_since_watered": 0,
+          "needs_water": false,
+          "next_watering": "2026-11-05"
+        },
+        {
+          "id": 1,
+          "name": "Монстера",
+          "same_interval_count": 1,
+          "watering_interval_days": 7,
+          "last_watered_at": "2026-10-12",
+          "is_succulent": false,
+          "sunlight_needs": "Розсіяне світло",
+          "days_since_watered": 10,
+          "needs_water": true,
+          "next_watering": "Прострочено на 3 дн."
+        }
+      ],
+      "meta": {
+        "total": 3,
+        "needs_water": 2
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 403,
+    "body": {
+      "success": false,
+      "error": "Оновіть сторінку та повторіть дію: неправильний токен форми."
+    }
+  },
+  {
+    "method": "POST",
+    "url": "api.php?resource=plants",
+    "status": 415,
+    "body": {
+      "success": false,
+      "error": "Використовуйте application/json або дані HTML-форми."
+    }
+  }
+]

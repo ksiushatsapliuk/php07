@@ -1,0 +1,68 @@
+{
+  "documents": [
+    "http://127.0.0.1:8095/"
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=%D0%9C%D0%BE%D0%BD%D1%81&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=%25&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=1",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&action=water",
+      "type": "fetch",
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=1",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants",
+      "type": "fetch",
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=%D0%B0&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=Offline&due=0",
+      "type": "fetch",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:8095/api.php?resource=plants&q=&due=0",
+      "type": "fetch",
+      "method": "GET"
+    }
+  ],
+  "errors": []
+}
