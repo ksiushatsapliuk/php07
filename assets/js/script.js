@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.getElementById('plantTableBody');
     const search = document.getElementById('search');
+    const intervalFilter = document.getElementById('intervalFilter');
     const dueOnly = document.getElementById('onlyNeedsWater');
     const form = document.getElementById('addPlantForm');
     const csrfToken = form.elements.csrf.value;
@@ -101,7 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
         body.setAttribute('aria-busy', 'true');
         try {
             const url = 'api.php?resource=plants&q=' + encodeURIComponent(search.value.trim())
-                + '&due=' + (dueOnly.checked ? '1' : '0');
+                + '&due=' + (dueOnly.checked ? '1' : '0')
+                + (intervalFilter.value === '' ? '' : '&interval=' + encodeURIComponent(intervalFilter.value));
 
             const {data, meta} = await request(url);
             if (current !== requestNumber) return;
@@ -114,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = document.getElementById('summaryIcon');
             icon.replaceChildren();
             if (meta.needs_water > 0) {
-                const image = document.createElement('img'); image.src = 'watering-can.png'; image.alt = 'Полив'; image.className = 'summary-icon-img'; icon.append(image);
+                const image = document.createElement('img'); image.src = 'assets/img/watering-can.png'; image.alt = 'Полив'; image.className = 'summary-icon-img'; icon.append(image);
             } else icon.textContent = '✨';
             render();
         } catch (error) { if (current === requestNumber) message(error.message, true); }
@@ -127,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchForm').addEventListener('submit', event => {
         event.preventDefault(); clearTimeout(searchTimer); load();
     });
+    intervalFilter.addEventListener('change', () => { clearTimeout(searchTimer); load(); });
     dueOnly.addEventListener('change', () => { clearTimeout(searchTimer); load(); });
     form.addEventListener('submit', async event => {
         event.preventDefault();
@@ -137,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await request('api.php?resource=plants', {method: 'POST', body: new FormData(form)});
             form.reset();
             // Новий запис одразу видно, навіть якщо до додавання діяв фільтр.
-            search.value = ''; dueOnly.checked = false; clearTimeout(searchTimer);
+            search.value = ''; intervalFilter.value = ''; dueOnly.checked = false; clearTimeout(searchTimer);
             await load();
         } catch (error) { message(error.message, true); }
         finally { button.disabled = false; }

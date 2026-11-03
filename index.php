@@ -1,17 +1,17 @@
-<?php require_once __DIR__ . '/bootstrap.php'; ?>
+<?php require_once __DIR__ . '/lib/bootstrap.php'; ?>
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FloraCare — Догляд за рослинами (PDO/MySQL)</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="assets/css/style.css?v=3">
 </head>
 <body>
 <div class="app-container">
     <header class="header">
         <div class="header-icon">
-            <img src="alocasia.png" alt="FloraCare" class="header-icon-img">
+            <img src="assets/img/alocasia.png" alt="FloraCare" class="header-icon-img">
         </div>
         <div>
             <h1>FloraCare</h1>
@@ -40,7 +40,7 @@
                 <label class="checkbox-group">
                     <input type="checkbox" id="isSucculent" name="is_succulent" class="custom-checkbox-input">
                     <span class="custom-checkbox-box"></span>
-                    <img src="succulent.png" alt="Сукулент" class="checkbox-icon-img">
+                    <img src="assets/img/succulent.png" alt="Сукулент" class="checkbox-icon-img">
                     <span class="checkbox-label-text">Це сукулент / кактус</span>
                 </label>
             </div>
@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="summary-status-icon" id="summaryIcon">
-            <img src="watering-can.png" alt="Полив" class="summary-icon-img">
+            <img src="assets/img/watering-can.png" alt="Полив" class="summary-icon-img">
         </div>
     </div>
 
@@ -71,6 +71,10 @@
             <input type="search" id="search" name="q" class="form-control" placeholder="Назва або частина назви рослини" aria-label="Назва рослини">
             <button type="submit" class="btn-primary" style="flex:none;">Знайти</button>
         </form>
+        <div class="form-group" style="margin-top:16px;">
+            <label for="intervalFilter">Інтервал поливу (днів; порожнє поле — усі)</label>
+            <input type="number" id="intervalFilter" class="form-control" min="1" max="3650" step="1" placeholder="Наприклад, 7">
+        </div>
         <label class="checkbox-group" style="margin-top:16px;">
             <input type="checkbox" id="onlyNeedsWater" class="custom-checkbox-input">
             <span class="custom-checkbox-box"></span>
@@ -108,7 +112,7 @@
         </table>
     </div>
 </div>
-<script src="sort.js"></script>
-<script src="script.js"></script>
+<script src="assets/js/sort.js"></script>
+<script src="assets/js/script.js"></script>
 </body>
 </html>

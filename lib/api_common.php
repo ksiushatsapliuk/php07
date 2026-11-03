@@ -82,8 +82,10 @@ function apiBody(): array
 }
 
 require_once __DIR__ . '/bootstrap.php';
-require_once __DIR__ . '/classes/Garden.php';
-require_once __DIR__ . '/lib/functions.php';
+require_once __DIR__ . '/../classes/Plant.php';
+require_once __DIR__ . '/../classes/Succulent.php';
+require_once __DIR__ . '/../classes/Garden.php';
+require_once __DIR__ . '/functions.php';
 
 function plantJson(array $row): array
 {

@@ -9,7 +9,7 @@ header('Cache-Control: no-store');
 ini_set('display_errors', '0');
 define('JSON_API', true);
 
-require_once __DIR__ . '/api_common.php';
+require_once __DIR__ . '/lib/api_common.php';
 
 // контракт і приклади: API.md. Усі JSON-відповіді мають success та data або error.
 $method = $_SERVER['REQUEST_METHOD'];
@@ -69,7 +69,7 @@ if ($method === 'POST') {
     }
 }
 
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/lib/db.php';
 
 $garden = new Garden($pdo);
 

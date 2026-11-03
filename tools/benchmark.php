@@ -7,9 +7,10 @@ if (PHP_SAPI !== 'cli') {
 
 date_default_timezone_set('Europe/Kyiv');
 
-$options = getopt('', ['source06:', 'work-dir:', 'results:', 'httpd:', 'ab:', 'port:']);
+$options = getopt('', ['work-dir:', 'results:', 'httpd:', 'ab:', 'port:']);
 $app = dirname(__DIR__);
-$source = realpath($options['source06'] ?? $app . '/../php06');
+require_once __DIR__ . '/../lib/migrations.php';
+require_once $app . '/classes/Garden.php';
 $work = $options['work-dir'] ?? sys_get_temp_dir() . '/floracare_bench_' . bin2hex(random_bytes(5));
 $results = $options['results'] ?? $app . '/results';
 $httpd = $options['httpd'] ?? 'C:/xampp/apache/bin/httpd.exe';
@@ -95,10 +96,9 @@ function measure(string $label, string $url): array
         ensure(count(array_unique(array_column($samples, $key))) === 1, 'Несталі дані серії: ' . $label . ', ' . $key);
     }
 
-    file_put_contents($results . '/' . $label . '-samples.json', json_encode($samples, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
     $output = run([$ab, '-n', '200', '-c', '20', '-k', $url]);
-    file_put_contents($results . '/' . $label . '-ab.txt', $output);
+    file_put_contents($results . '/ab.txt', '===== ' . $label . ' =====' . PHP_EOL . 'ab -n 200 -c 20 -k ' . $url . PHP_EOL . $output . PHP_EOL, FILE_APPEND);
 
     foreach (['requests_per_second' => 'Requests per second', 'time_per_request_ms' => 'Time per request', 'failed_requests' => 'Failed requests', 'complete_requests' => 'Complete requests', 'concurrency' => 'Concurrency Level'] as $key => $name) {
         ensure(preg_match('/' . $name . ':\s+([\d.]+)/', $output, $match) === 1, 'Немає метрики ' . $name);
@@ -109,15 +109,18 @@ function measure(string $label, string $url): array
     ensure($metrics['complete_requests'] === 200.0 && $metrics['concurrency'] === 20.0, 'Некоректні параметри AB.');
     $result = array_merge($samples[0], $metrics, [
         'url' => $url,
+        'samples' => $samples,
         'elapsed_ms' => array_sum(array_column($samples, 'elapsed_ms')) / 10,
         'peak_mb' => max(array_column($samples, 'peak_mb')),
     ]);
-    echo $label . ': ' . json_encode($result, JSON_UNESCAPED_UNICODE) . PHP_EOL;
+    $display = $result;
+    unset($display['samples']);
+    echo $label . ': ' . json_encode($display, JSON_UNESCAPED_UNICODE) . PHP_EOL;
 
     return $result;
 }
 
-ensure($source !== false, 'Не знайдено php06; задайте --source06=шлях.');
+ensure(is_file($app . '/benchmarks/original06.php'), 'Відсутній збережений базовий список 06.');
 ensure(extension_loaded('pdo_mysql'), 'Увімкніть pdo_mysql для PHP CLI.');
 ensure(extension_loaded('curl'), 'Увімкніть curl для PHP CLI: -d extension=curl.');
 ensure(is_file($httpd) && is_file($ab), 'Перевірте --httpd та --ab.');
@@ -129,56 +132,47 @@ mkdir($work, 0777, true);
 if (!is_dir($results)) mkdir($results, 0777, true);
 $work = str_replace('\\', '/', realpath($work));
 $results = str_replace('\\', '/', realpath($results));
-$config = require $source . '/config.php';
+file_put_contents($results . '/ab.txt', '');
+if (is_file($results . '/summary.json')) unlink($results . '/summary.json');
+$config = require $app . '/config.php';
 $pdo = new PDO(sprintf('mysql:host=%s;port=%d;charset=utf8mb4', $config['host'], $config['port']), $config['user'], $config['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $database = 'codex_php07_bench_' . bin2hex(random_bytes(8));
 $server = null;
 
 try {
-    $schema = str_replace($config['database'], $database, file_get_contents($source . '/schema.sql'));
+    $schema = str_replace('practicum7', $database, file_get_contents($app . '/sql/schema.sql'));
     $pdo->exec($schema);
     $pdo->exec("SET time_zone = '" . date('P') . "'");
     $insert = $pdo->prepare('INSERT INTO plants(name,watering_interval_days,last_watered_at,is_succulent,sunlight_needs) VALUES (?, ?, DATE_SUB(CURDATE(), INTERVAL ? DAY), 0, ?)');
 
-    for ($i = 0; $i < 500; $i++) $insert->execute(['Рослина ' . $i, $i % 100 + 1, $i % 120, 'Розсіяне світло']);
+    for ($i = 0; $i < 500; $i++) {
+        $interval = $i % 100 + 1;
+        $insert->execute(['Рослина ' . $i, $interval, $i % 25 === 0 ? $interval + 1 : 0, 'Розсіяне світло']);
+    }
 
     $pdo->query('ANALYZE TABLE plants')->fetchAll();
 
-    foreach (['original06' => $source, 'nplus' => $app, 'after' => $app, 'uncached' => $app] as $label => $from) {
+    foreach (['original06', 'nplus', 'after', 'uncached'] as $label) {
         $site = $work . '/' . $label;
-        copyPhp($from, $site);
+        copyPhp($app, $site);
         file_put_contents($site . '/config.php', '<?php return ' . var_export(array_replace($config, ['database' => $database]), true) . ';');
     }
 
-    // Лише тестова копія 06 отримує лічильник і заголовки профілювання.
-    foreach (['MeasuredPDO.php', 'Profile.php'] as $name) copy($app . '/lib/' . $name, $work . '/original06/lib/' . $name);
-    $file = $work . '/original06/db.php';
-    $text = str_replace('new PDO(', 'new MeasuredPDO(', file_get_contents($file));
-    file_put_contents($file, str_replace('<?php', "<?php\nrequire_once __DIR__ . '/lib/MeasuredPDO.php';", $text));
-    $file = $work . '/original06/api.php';
-    file_put_contents($file, str_replace('<?php', "<?php\nrequire_once __DIR__ . '/lib/Profile.php';\nProfile::start();", file_get_contents($file)));
-    $file = $work . '/original06/api_common.php';
-    $text = preg_replace_callback('/echo (json_encode\([^;]+\));/', fn($m) => '$json = ' . $m[1] . ";\nheader('Content-Length: ' . strlen(\$json));\nProfile::finish(\$GLOBALS['pdo'] ?? null);\necho \$json;", file_get_contents($file));
-    file_put_contents($file, $text);
+    mkdir($work . '/original06/benchmarks');
+    copy($app . '/benchmarks/original06.php', $work . '/original06/benchmarks/original06.php');
 
-    // Навчальний N+1 існує лише в окремій копії; робочий API не змінюється.
-    $file = $work . '/nplus/classes/Garden.php';
-    $text = preg_replace('/\$sql = \'SELECT p\.\*, grouped\.same_interval_count.*?grouped\.watering_interval_days = p\.watering_interval_days\';/s', "\$sql = 'SELECT p.* FROM plants p';", file_get_contents($file), 1, $replaced);
-    ensure($replaced === 1, 'Змінився GROUP BY: оновіть навчальну заміну.');
-    $text = str_replace('return $stmt->fetchAll();', <<<'PHP'
-$rows = $stmt->fetchAll();
-        foreach ($rows as &$row) {
-            $count = $this->pdo->prepare('SELECT COUNT(*) FROM plants WHERE watering_interval_days = ?');
-            $count->execute([$row['watering_interval_days']]);
-            $row['same_interval_count'] = (int)$count->fetchColumn();
-        }
-        return $rows;
-PHP, $text);
-    file_put_contents($file, str_replace("return \$this->cache->remember(fn() => \$this->getAllPlants('', null, true));", "return \$this->getAllPlants('', null, true);", $text));
-
-    // Контроль кешу: та сама оптимізована логіка, лише без читання/запису кешу.
-    $file = $work . '/uncached/classes/Garden.php';
-    file_put_contents($file, str_replace("return \$this->cache->remember(fn() => \$this->getAllPlants('', null, true));", "return \$this->getAllPlants('', null, true);", file_get_contents($file)));
+    // Варіанти збережено в репозиторії, SQL не генерується замінами рядків.
+    foreach (['nplus' => ['BeforeGarden.php', 'BeforeGarden'], 'uncached' => ['UncachedGarden.php', 'UncachedGarden']] as $label => [$relative, $class]) {
+        $destination = $work . '/' . $label . '/benchmarks/' . $relative;
+        if (!is_dir(dirname($destination))) mkdir(dirname($destination), 0777, true);
+        copy($app . '/benchmarks/' . $relative, $destination);
+        $file = $work . '/' . $label . '/api.php';
+        $api = file_get_contents($file);
+        ensure(substr_count($api, 'new Garden($pdo)') === 1, 'Змінився конструктор API.');
+        $api = str_replace('new Garden($pdo)', 'new ' . $class . '($pdo)', $api);
+        $include = "require_once __DIR__ . '/benchmarks/" . $relative . "';";
+        file_put_contents($file, str_replace('<?php', "<?php\n" . $include, $api));
+    }
 
     $apache = str_replace('\\', '/', dirname(dirname($httpd)));
     $php = str_replace('\\', '/', dirname(PHP_BINARY));
@@ -186,9 +180,9 @@ PHP, $text);
     file_put_contents($work . '/php.ini', "extension_dir=\"$php/ext\"\nextension=pdo_mysql\nextension=mbstring\nsession.save_path=\"$work/sessions\"\nsys_temp_dir=\"$work\"\nmax_execution_time=300\nmemory_limit=256M\ndisplay_errors=Off\nlog_errors=On\nerror_log=\"$work/php-error.log\"\n");
     $conf = "ServerRoot \"$apache\"\nServerName 127.0.0.1\nListen 127.0.0.1:$port\nPidFile \"$work/apache.pid\"\nErrorLog \"$work/apache-error.log\"\n";
 
-    foreach (['authz_core', 'authz_host', 'dir', 'mime'] as $module) $conf .= "LoadModule {$module}_module modules/mod_$module.so\n";
+    foreach (['authz_core', 'authz_host', 'dir', 'mime', 'env'] as $module) $conf .= "LoadModule {$module}_module modules/mod_$module.so\n";
 
-    $conf .= "TypesConfig \"$apache/conf/mime.types\"\nLoadFile \"$php/php8ts.dll\"\nLoadModule php_module \"$php/php8apache2_4.dll\"\nPHPIniDir \"$work\"\nThreadsPerChild 32\nKeepAlive On\nMaxKeepAliveRequests 1000\nKeepAliveTimeout 30\nDocumentRoot \"$work\"\n<Directory \"$work\">\nRequire all granted\nAllowOverride None\nOptions None\n</Directory>\n<FilesMatch \"\\.php$\">\nSetHandler application/x-httpd-php\n</FilesMatch>\n";
+    $conf .= "TypesConfig \"$apache/conf/mime.types\"\nLoadFile \"$php/php8ts.dll\"\nLoadModule php_module \"$php/php8apache2_4.dll\"\nPHPIniDir \"$work\"\nSetEnv FLORACARE_BENCHMARK 1\nThreadsPerChild 32\nKeepAlive On\nMaxKeepAliveRequests 1000\nKeepAliveTimeout 30\nDocumentRoot \"$work\"\n<Directory \"$work\">\nRequire all granted\nAllowOverride None\nOptions None\n</Directory>\n<FilesMatch \"\\.php$\">\nSetHandler application/x-httpd-php\n</FilesMatch>\n";
     file_put_contents($work . '/apache.conf', $conf);
     run([$httpd, '-t', '-f', $work . '/apache.conf']);
     $server = proc_open([$httpd, '-X', '-f', $work . '/apache.conf'], [1 => ['file', $work . '/console.log', 'a'], 2 => ['redirect', 1]], $pipes);
@@ -200,8 +194,17 @@ PHP, $text);
         usleep(200000);
     }
 
-    $plan = fn() => $pdo->query('EXPLAIN SELECT * FROM plants WHERE watering_interval_days = 7')->fetchAll(PDO::FETCH_ASSOC);
-    $before = $plan();
+    $garden = new Garden($pdo);
+    $plans = [];
+    $capturePlans = function (string $stage) use ($garden, $pdo, &$plans): void {
+        foreach (['interval' => ['', 7, false], 'due' => ['', null, true]] as $label => $filters) {
+            [$sql, $params] = $garden->getListQuery(...$filters);
+            $statement = $pdo->prepare('EXPLAIN ' . $sql);
+            $statement->execute($params);
+            $plans[$label][$stage] = ['sql' => $sql, 'params' => $params, 'rows' => $statement->fetchAll(PDO::FETCH_ASSOC)];
+        }
+    };
+    $capturePlans('before');
     $summary = ['environment' => [
         'started_at' => date(DATE_ATOM), 'php' => PHP_VERSION,
         'apache' => trim(run([$httpd, '-v'])), 'ab' => trim(run([$ab, '-V'])),
@@ -210,12 +213,15 @@ PHP, $text);
         'rows' => 500, 'profile_samples' => 10, 'ab_requests' => 200, 'ab_concurrency' => 20,
     ]];
     $base = 'http://127.0.0.1:' . $port;
-    $summary['original06'] = measure('original06', $base . '/original06/api.php?resource=plants');
+    $summary['original06'] = measure('original06', $base . '/original06/benchmarks/original06.php?resource=plants');
     $summary['nplus'] = measure('nplus', $base . '/nplus/api.php?resource=plants');
     $summary['nplus_due'] = measure('nplus_due', $base . '/nplus/api.php?resource=plants&due=1');
-    $pdo->exec('CREATE INDEX idx_plants_watering_interval ON plants(watering_interval_days)');
+    applyIndexes($pdo);
+    applyIndexes($pdo); // Перевірка повторного застосування без Duplicate key name.
     $pdo->query('ANALYZE TABLE plants')->fetchAll();
-    $after = $plan();
+    $capturePlans('after');
+    ensure(in_array('idx_plants_next_watering', array_column($plans['due']['after']['rows'], 'key'), true), 'EXPLAIN реального списку поливу не використав індекс дати.');
+    ensure(in_array('idx_plants_watering_interval', array_column($plans['interval']['after']['rows'], 'key'), true), 'EXPLAIN інтервалу не використав потрібний індекс.');
     $summary['nplus_indexed'] = measure('nplus_indexed', $base . '/nplus/api.php?resource=plants');
     $url = $base . '/after/api.php?resource=plants';
     $summary['optimized'] = measure('optimized', $url);
@@ -225,15 +231,10 @@ PHP, $text);
     ensure($summary['cache_cold']['cache'] === 'MISS' && $summary['cache_warm']['cache'] === 'HIT', 'Перевірте кеш.');
     ensure($summary['nplus_indexed']['body_sha256'] === $summary['optimized']['body_sha256'], 'Списки N+1 та GROUP BY відрізняються.');
     ensure($summary['grouped_due']['body_sha256'] === $summary['cache_warm']['body_sha256'], 'Кеш змінив відповідь списку поливу.');
-    ensure($summary['grouped_due']['rows'] === 200 && $summary['optimized']['rows'] === 500, 'Некоректні тестові дані.');
+    ensure($summary['grouped_due']['rows'] === 20 && $summary['optimized']['rows'] === 500, 'Некоректні тестові дані.');
 
-    foreach (['before' => $before, 'after' => $after] as $label => $rows) {
-        $lines = [implode("\t", array_keys($rows[0]))];
-        foreach ($rows as $row) $lines[] = implode("\t", array_map(fn($v) => $v ?? 'NULL', $row));
-        file_put_contents($results . '/explain-' . $label . '.tsv', implode(PHP_EOL, $lines) . PHP_EOL);
-        $summary['explain_' . $label] = $rows;
-    }
-
+    $summary['plans'] = $plans;
+    $summary['environment']['due_rows'] = 20;
     $summary['environment']['completed_at'] = date(DATE_ATOM);
     file_put_contents($results . '/summary.json', json_encode($summary, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
 } finally {

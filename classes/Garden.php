@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/Plant.php';
-require_once __DIR__ . '/Succulent.php';
 require_once __DIR__ . '/../lib/FileCache.php';
 
 class Garden 
@@ -21,6 +19,23 @@ class Garden
     // GROUP BY рахує кількість рослин кожного інтервалу один раз, без SQL у циклі.
     public function getAllPlants(string $query = '', ?int $interval = null, bool $due = false): array
     {
+        [$sql, $params] = $this->getListQuery($query, $interval, $due);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $rows = $stmt->fetchAll();
+
+        if ($due) {
+            // Зберігаємо звичний порядок ID, не змушуючи MySQL сканувати PRIMARY заради сортування.
+            usort($rows, fn($a, $b) => $b['id'] <=> $a['id']);
+        }
+
+        return $rows;
+    }
+
+    // Цей самий SQL використовують API та EXPLAIN у benchmark.php.
+    public function getListQuery(string $query = '', ?int $interval = null, bool $due = false): array
+    {
         $conditions = [];
         $params = [];
 
@@ -35,25 +50,27 @@ class Garden
         }
 
         if ($due) {
-            $conditions[] = 'DATE_ADD(p.last_watered_at, INTERVAL p.watering_interval_days DAY) <= CURDATE()';
+            $conditions[] = 'p.next_watering_at <= CURDATE()';
         }
 
-        $sql = 'SELECT p.*, grouped.same_interval_count
+        $sql = $this->selectSql();
+
+        if ($conditions !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        return [$sql . ($due ? '' : ' ORDER BY p.id DESC'), $params];
+    }
+
+    protected function selectSql(): string
+    {
+        return 'SELECT p.*, grouped.same_interval_count
                 FROM plants p
                 JOIN (
                     SELECT watering_interval_days, COUNT(*) AS same_interval_count
                     FROM plants
                     GROUP BY watering_interval_days
                 ) grouped ON grouped.watering_interval_days = p.watering_interval_days';
-
-        if ($conditions !== []) {
-            $sql .= ' WHERE ' . implode(' AND ', $conditions);
-        }
-
-        $stmt = $this->pdo->prepare($sql . ' ORDER BY p.id DESC');
-        $stmt->execute($params);
-
-        return $stmt->fetchAll();
     }
 
     public function needsWaterToday(): array

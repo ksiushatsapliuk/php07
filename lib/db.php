@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
-require_once __DIR__ . '/lib/MeasuredPDO.php';
+require_once __DIR__ . '/MeasuredPDO.php';
 
-$config = require __DIR__ . '/config.php';
+$config = require __DIR__ . '/../config.php';
 $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $config['host'], $config['port'], $config['database']);
 
 try {
